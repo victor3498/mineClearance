@@ -155,7 +155,7 @@ import BasicBlock from './BasicBlock.vue';
 import { generateArray } from '@/data/ButtonArray';
 import { position } from '@/data/datatype';
 
-let props = defineProps<{ N: number, NM: number }>();
+let props = defineProps<{ N: number, NM: number; }>();
 let realArray = ref<number[][]>([]);
 let gameStarted = ref(false);
 let revealedCount = ref(0); // 计数，判断是否胜利
@@ -164,7 +164,7 @@ let rePosArray = ref<position[]>([]); // 收集扩散事件中应该点开的子
 // 计时器相关逻辑
 let timer = ref(0); // 计时器值
 let timerInterval: number | null = null; // 计时器 interval
-
+const emit = defineEmits(['gameReady']);
 // 启动计时器
 const startTimer = () => {
   if (timerInterval !== null) return; // 防止重复启动
@@ -197,12 +197,33 @@ watch(gameStarted, (newVal) => {
   }
 });
 
+
+// watch(() => props.resetGame, () => {
+//   // 重置游戏状态
+//   gameStarted.value = false;
+//   realArray.value = [];
+//   revealedCount.value = 0;
+//   rePosArray.value = [];
+//   resetTimer();
+// });
+
+// // 监听 newGameReady 的变化
+// watch(() => props.newGameReady, (newVal) => {
+//   if (newVal) {
+//     // 新游戏准备完毕，等待用户点击启动
+//     gameStarted.value = false; // 确保游戏未启动
+//     emit('gameReady'); // 通知父组件新游戏已准备完毕
+//   }
+// });
+
 // 组件卸载时清除计时器
 onUnmounted(() => {
   stopTimer();
 });
 
 const startGame = (pos: position) => {
+ 
+  
   realArray.value = generateArray(props.N, props.NM, pos); // 生成新数组
   console.log('此消息应该先于扩散', realArray.value);
   gameStarted.value = true;
@@ -306,7 +327,7 @@ const blockArray = computed(() => {
         <span>雷数: {{ NM }}</span>
       </div>
       <div class="info-item">
-        <span>时间: {{ timer }} 秒</span>
+        <span>时间(秒): {{ timer }} </span>
       </div>
     </div>
 

@@ -180,7 +180,7 @@ const handleLeftClick = () => {
     }
   }
   emit('updatePosition');
-  console.log('传递了更新位置信息');
+  
 };
 
 const handleRightClick = (event: MouseEvent) => {

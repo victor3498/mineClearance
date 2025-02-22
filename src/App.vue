@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import IntegrationArea from '@/compoent/integrationArea.vue';
-
+import chongyue from '@/assets/chongyue.png';
+import shu from '@/assets/shu.png'
+import xi from '@/assets/xi.png'
 
 // 游戏配置
 const N = ref(9); // 雷盘大小
@@ -9,6 +11,9 @@ const NM = ref(10); // 雷的数量（默认 10）
 const showCustomDialog = ref(false);
 const customSize = ref(9);
 const customMines = ref(10);
+
+const resetKey = ref(0); // 用于强制重新挂载 IntegrationArea
+
 // 游戏状态
 const gameStatus = ref('playing'); // 可能值："playing"（进行中）, "win"（胜利）, "lose"（失败）
 
@@ -43,8 +48,11 @@ const handleLevel = (level: string) => {
       break;
     case 'custom':
       showCustomDialog.value = true;
-      break;
+      return;
   }
+
+  
+ resetKey.value++;
 };
 const handleCustomConfirm = () => {
   if (customSize.value < 5 || customSize.value > 20) {
@@ -58,6 +66,7 @@ const handleCustomConfirm = () => {
   N.value = customSize.value;
   NM.value = customMines.value;
   showCustomDialog.value = false;
+  resetKey.value++;
 };
 </script>
 
@@ -73,14 +82,30 @@ const handleCustomConfirm = () => {
 
     <!-- 中部游戏区域 -->
     <div class="game-area">
-      <IntegrationArea :N="N" :NM="NM" />
+      <IntegrationArea 
+        :key="resetKey"
+        :N="N" 
+        :NM="NM" 
+         
+      />
 
-       <!-- <IntegrationArea 
-      :N="N" 
-      :NM="NM" 
-      @gameWin="handleGameWin" 
-      @gameOver="handleGameOver"
-    /> -->
+   
+    </div>
+
+    <div class="rules-area">
+      <h3>游戏规则说明</h3>
+      <div class="rule-item">
+        <img :src="chongyue" alt="旗帜" class="rule-image" />
+        <span>旗帜：标记你认为有地雷的位置。</span>
+      </div>
+      <div class="rule-item">
+        <img :src="xi" alt="数字 0" class="rule-image" />
+        <span>数字 0:周围没有地雷,点击后会自动展开周围区域。</span>
+      </div>
+      <div class="rule-item">
+        <img :src="shu" alt="地雷" class="rule-image" />
+        <span>地雷：点击后会引爆地雷，游戏失败。</span>
+      </div>
     </div>
 
     <!-- 自定义弹窗 -->
@@ -111,7 +136,7 @@ const handleCustomConfirm = () => {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: #f0f0f0;
+  background-color: #d2e79d;
   font-family: Arial, sans-serif;
 }
 
@@ -198,5 +223,32 @@ const handleCustomConfirm = () => {
 
 .dialog-buttons button:hover {
   background-color: #0056b3;
+}
+
+.rules-area {
+  width: 100%;
+  max-width: 800px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.rules-area h3 {
+  margin-bottom: 15px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.rule-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.rule-image {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
 }
 </style>  
