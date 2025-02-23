@@ -106,6 +106,9 @@ const handleCustomConfirm = () => {
         <img :src="shu" alt="地雷" class="rule-image" />
         <span>地雷：点击后会引爆地雷，游戏失败。</span>
       </div>
+      <div class="rule-item">
+        <span>左键点击展开对应区块，右键标记你认为有地雷的位置，再次点击取消标记</span>
+      </div>
     </div>
 
     <!-- 自定义弹窗 -->
