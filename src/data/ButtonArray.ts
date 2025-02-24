@@ -92,7 +92,7 @@ export function calculateNeighbors(array: number[][], n: number,pos :position): 
 
 // 生成最终的数组
 export function generateArray(n: number, m: number, pos: position): number[][] {
-    // console.log("有调用生成真数组的函数")
+    console.log("有调用生成真数组的函数")
     const array = initializeArray(n);
     // console.log(array[pos.x][pos.y])
     setPositionZero(array, pos);
@@ -101,7 +101,7 @@ export function generateArray(n: number, m: number, pos: position): number[][] {
     // console.log(array[pos.x][pos.y])
     calculateNeighbors(array, n,pos);
     // console.log('标记1',array[pos.x][pos.y])
-    // console.log('标记2',array);
+    console.log('标记2',array);
     return array;
     
 }

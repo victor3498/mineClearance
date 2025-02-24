@@ -142,11 +142,16 @@ import { computed, ref, watch } from 'vue';
 import chongyue from '@/assets/chongyue.png';
 import shu from '@/assets/shu.png'
 import xi from '@/assets/xi.png'
-import { position } from '@/data/datatype'
+import { position } from '@/data/datatype';
+import { useGameStore } from '@/store/gameStore';
+
 
 let props = defineProps<{ Num: number, Pos: position ,Posarray: position[]}>();
 const emit = defineEmits(['updatePosition', 'zeroMessage', 'nineMessage', 'gameStart']);
+const stateOfBlock = ref(2); // 1=标记, 2=未点开, 3=已点开
 const PosSelf = computed(() => props.Pos);
+const gameStore = useGameStore();
+
 
 
 watch(() => props.Posarray, (newVal, oldVal) => {
@@ -155,7 +160,7 @@ watch(() => props.Posarray, (newVal, oldVal) => {
   }
 });
 
-const stateOfBlock = ref(2); // 1=标记, 2=未点开, 3=已点开
+
 
 
 
@@ -163,24 +168,32 @@ const handleLeftClick = () => {
   if (stateOfBlock.value === 2) {
     stateOfBlock.value = 3;
     if (props.Num === -1) {
-      emit('gameStart', props.Pos);
+      // emit('gameStart', props.Pos);
+      gameStore.startGame(props.Pos);
   setTimeout(() => {
-    emit('zeroMessage', props.Pos);
+    // emit('zeroMessage', props.Pos);
+    gameStore.handleZeroMessage(props.Pos);
     console.log('这里有走下来');
   }, 10);
 
        // 触发真启动
-      console.log(props.Pos, '传递了真启动信息');
+      // console.log(props.Pos, '传递了真启动信息');
+ 
     } else if (props.Num === 0) {
-      console.log('传递了扩散信息');
-      emit('zeroMessage', props.Pos); // 触发扩散
+      // console.log('传递了扩散信息');
+      // emit('zeroMessage', props.Pos); // 触发扩散
+       gameStore.handleZeroMessage(props.Pos);
+      
     } else if (props.Num === 9) {
-      console.log('传递了触雷信息');
-      emit('nineMessage'); // 触雷
+      // console.log('传递了触雷信息');
+      // emit('nineMessage'); // 触雷
+      gameStore.handleNineMessage();
+      
     }
   }
-  emit('updatePosition');
-  
+  // emit('updatePosition');
+   gameStore.updatePosition();
+ 
 };
 
 const handleRightClick = (event: MouseEvent) => {

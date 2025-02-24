@@ -1,93 +1,110 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import IntegrationArea from '@/compoent/integrationArea.vue';
 import chongyue from '@/assets/chongyue.png';
 import shu from '@/assets/shu.png'
 import xi from '@/assets/xi.png'
-
+import { useGameStore } from './store/gameStore';
 // 游戏配置
-const N = ref(9); // 雷盘大小
-const NM = ref(10); // 雷的数量（默认 10）
-const showCustomDialog = ref(false);
-const customSize = ref(9);
-const customMines = ref(10);
+// const N = ref(9); // 雷盘大小
+// const NM = ref(10); // 雷的数量（默认 10）
+// const showCustomDialog = ref(false);
+// const customSize = ref(9);
+// const customMines = ref(10);
 
-const resetKey = ref(0); // 用于强制重新挂载 IntegrationArea
+// const resetKey = ref(0); // 用于强制重新挂载 IntegrationArea
+const gameStore = useGameStore();
 
 // 游戏状态
 const gameStatus = ref('playing'); // 可能值："playing"（进行中）, "win"（胜利）, "lose"（失败）
+watch(()=>gameStore.resetKey,(newVal,oldvalue)=>{
+   console.log('key值发生了变化',gameStore.resetKey);
+  
+});
 
-// 处理游戏失败
-const handleGameOver = () => {
-  gameStatus.value = 'lose';
-};
 
-// 处理游戏胜利
-const handleGameWin = () => {
-  gameStatus.value = 'win';
-};
 
-// 重新开始游戏
-const restartGame = () => {
-  gameStatus.value = 'playing'; // 重置游戏状态
-};
+// // 处理游戏失败
+// const handleGameOver = () => {
+//   gameStatus.value = 'lose';
+// };
 
-const handleLevel = (level: string) => {
-  switch (level) {
-    case 'beginner':
-      N.value = 9;
-      NM.value = 10;
-      break;
-    case 'intermediate':
-      N.value = 16;
-      NM.value = 40;
-      break;
-    case 'expert':
-      N.value = 20;
-      NM.value = 60;
-      break;
-    case 'custom':
-      showCustomDialog.value = true;
-      return;
-  }
+// // 处理游戏胜利
+// const handleGameWin = () => {
+//   gameStatus.value = 'win';
+// };
+
+// // 重新开始游戏
+// const restartGame = () => {
+//   gameStatus.value = 'playing'; // 重置游戏状态
+// };
+
+// const handleLevel = (level: string) => {
+//   switch (level) {
+//     case 'beginner':
+//       gameStore.N = 9;
+//       gameStore.NM = 10;
+//       break;
+//     case 'intermediate':
+//       gameStore.N = 16;
+//       gameStore.NM = 40;
+//       break;
+//     case 'expert':
+//       gameStore.N = 20;
+//       gameStore.NM = 60;
+//       break;
+//     case 'custom':
+//       showCustomDialog.value = true;
+//       return;
+//   }
 
   
- resetKey.value++;
-};
-const handleCustomConfirm = () => {
-  if (customSize.value < 5 || customSize.value > 20) {
-    alert('大小必须在 5 到 20 之间');
-    return;
-  }
-  if (customMines.value < 1 || customMines.value > (customSize.value * customSize.value) / 2) {
-    alert(`雷数必须大于 0 且不超过 ${Math.floor((customSize.value * customSize.value) / 2)}`);
-    return;
-  }
-  N.value = customSize.value;
-  NM.value = customMines.value;
-  showCustomDialog.value = false;
-  resetKey.value++;
-};
+//  resetKey.value++;
+// };
+// const handleCustomConfirm = () => {
+//   if (customSize.value < 5 || customSize.value > 20) {
+//     alert('大小必须在 5 到 20 之间');
+//     return;
+//   }
+//   if (customMines.value < 1 || customMines.value > (customSize.value * customSize.value) / 2) {
+//     alert(`雷数必须大于 0 且不超过 ${Math.floor((customSize.value * customSize.value) / 2)}`);
+//     return;
+//   }
+//   gameStore.N = customSize.value;
+//   gameStore.NM = customMines.value;
+//   showCustomDialog.value = false;
+//   resetKey.value++;
+// };
 </script>
 
     <template>
   <div class="app">
     <!-- 上部按钮区域 -->
     <div class="button-area">
-      <button @click="handleLevel('beginner')">初级</button>
+      <!-- <button @click="handleLevel('beginner')">初级</button>
       <button @click="handleLevel('intermediate')">中级</button>
       <button @click="handleLevel('expert')">高级</button>
-      <button @click="handleLevel('custom')">自定义</button>
+      <button @click="handleLevel('custom')">自定义</button> -->
+      <button @click="gameStore.handleLevel('beginner')">初级</button>
+      <button @click="gameStore.handleLevel('intermediate')">中级</button>
+      <button @click="gameStore.handleLevel('expert')">高级</button>
+      <button @click="gameStore.handleLevel('custom')">自定义</button>
+      
+      
     </div>
 
     <!-- 中部游戏区域 -->
     <div class="game-area">
-      <IntegrationArea 
+      <!-- <IntegrationArea 
         :key="resetKey"
-        :N="N" 
-        :NM="NM" 
+        
          
-      />
+      /> -->
+      <div class="game-area">
+      <IntegrationArea :key="gameStore.resetKey" />
+    </div>
+
+
 
    
     </div>
@@ -112,20 +129,21 @@ const handleCustomConfirm = () => {
     </div>
 
     <!-- 自定义弹窗 -->
-    <div v-if="showCustomDialog" class="custom-dialog">
+    <div v-if="gameStore.showCustomDialog" class="custom-dialog">
       <div class="dialog-content">
         <h3>自定义设置</h3>
         <label>
           大小 (5-20):
-          <input v-model.number="customSize" type="number" min="5" max="20" />
+          <input v-model.number="gameStore.customSize" type="number" min="5" max="20" />
         </label>
         <label>
-          雷数 (1-{{ Math.floor((customSize * customSize) / 2) }}):
-          <input v-model.number="customMines" type="number" :min="1" :max="(customSize * customSize) / 2" />
+          雷数 (1-{{ Math.floor((gameStore.customSize * gameStore.customSize) / 2) }}):
+          <input v-model.number="gameStore.customMines" type="number" 
+                 :min="1" :max="Math.floor((gameStore.customSize * gameStore.customSize) / 2)" />
         </label>
         <div class="dialog-buttons">
-          <button @click="handleCustomConfirm">确定</button>
-          <button @click="showCustomDialog = false">取消</button>
+          <button @click="gameStore.handleCustomConfirm">确定</button>
+          <button @click="gameStore.showCustomDialog = false">取消</button>
         </div>
       </div>
     </div>
